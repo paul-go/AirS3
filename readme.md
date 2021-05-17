@@ -5,7 +5,7 @@
 
 AirS3 is a lightweight S3 HTTP client for browsers. It's designed to feel as egonomic as other HTTP clients such as [ky](https://github.com/sindresorhus/ky), except that the request signing process happens automatically in the background.
 
-# What This Solves
+## What This Solves
 
 Amazon claims that [S3 has a REST API](https://docs.aws.amazon.com/AmazonS3/latest/API/API_Operations_Amazon_Simple_Storage_Service.html). While this is technically true, the request signing process is so convoluted that in order to get anything done, you can't actually use it like any other REST API, and you instead need to use their SDK which is a 15 ZB JavaScript dependency. Ok, so that's a bit of an exaggeration. But it's certainly not small.
 
