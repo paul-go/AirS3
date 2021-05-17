@@ -1,0 +1,9 @@
+{
+	"extends": "../tsconfig.standard.json",
+	"compilerOptions": {
+		"outFile": "../build/airS3.js"
+	},
+	"include": [
+		"**/*.ts"
+	],
+}
