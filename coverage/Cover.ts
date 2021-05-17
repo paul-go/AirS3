@@ -12,7 +12,7 @@ namespace Cover
 	export async function coverCreateBucket()
 	{
 		const client = Cover.createClient();
-		const bucket = "put-test-bucket-" + Math.random();
+		const bucket = "put-test-bucket-" + Date.now();
 		
 		const putResult = await client.put({
 			bucket,
@@ -28,7 +28,7 @@ namespace Cover
 	export async function coverPutObject()
 	{
 		const client = Cover.createClient();
-		const key = "put-test-key-" + Math.random();
+		const key = "put-test-key-" + Date.now();
 		
 		const putResult = await client.put({
 			key,
