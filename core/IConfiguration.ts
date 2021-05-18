@@ -2,7 +2,8 @@
 namespace AirS3
 {
 	/**
-	 * 
+	 * Defines the configuration options necessary to instantiate an
+	 * AirS3 client.
 	 */
 	export interface IConfiguration
 	{
@@ -15,7 +16,8 @@ namespace AirS3
 	}
 	
 	/**
-	 * 
+	 * An enumeration of the hosts used by the most common S3-compatible
+	 * storage vendors.
 	 */
 	export const enum Host
 	{
