@@ -27,7 +27,7 @@ namespace AirS3
 		/**
 		 * 
 		 */
-		get(options: IRequest)
+		get(options: IRequest = {})
 		{
 			return this.call("GET", options);
 		}
