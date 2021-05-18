@@ -97,15 +97,7 @@ namespace AirS3
 			};
 			
 			const response = await Network.beginRequest(networkRequest);
-			
-			if (response instanceof NetworkResponse)
-			{
-				response;
-			}
-			else
-			{
-				debugger;
-			}
+			return response;
 		}
 	}
 	

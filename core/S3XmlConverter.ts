@@ -9,16 +9,8 @@ namespace AirS3
 		/**
 		 * Converts XML responses received from S3-compatible storage provides
 		 * into a corresponding JSON format.
-		 * 
-		 * @param typeMap Provides a mapping of key names to their corresponding
-		 * data types (String, Number, Boolean, or Array). The key names may exist
-		 * anywhere in the XML structure in order to be replaced. This is instead of 
-		 * having a complex XML => JSON marshalling system that would require
-		 * the shape of all XML data structures to be declared at runtime.
 		 */
-		export function toJson(
-			xmlText: string,
-			typeMap: S3XmlTypeMap = {}): object
+		export function toJson(xmlText: string): object
 		{
 			const parser = new DOMParser();
 			const parsed = parser.parseFromString(xmlText, "text/xml");
@@ -31,38 +23,9 @@ namespace AirS3
 				{
 					if (child instanceof Element)
 					{
-						const tagNameJs = child.tagName.replace(/^[A-Z]/, s => s.toLowerCase());
-						const type = typeMap[tagNameJs];
-						
-						if (type)
-						{
-							const tc = child.textContent;
-							
-							if (type === String)
-								object[tagNameJs] = tc;
-							
-							else if (type === Number)
-								object[tagNameJs] = Number(tc) || 0;
-							
-							else if (type === Boolean)
-								object[tagNameJs] = tc === "true";
-							
-							else if (type === Array)
-							{
-								const childObject = recurse(child);
-								
-								if (tagNameJs in object)
-									(object[tagNameJs] as any[]).push(childObject);
-								else
-									object[tagNameJs] = [childObject];
-							}
-						}
-						else
-						{
-							object[tagNameJs] = child.firstElementChild ?
-								recurse(child) :
-								child.textContent;
-						}
+						object[child.tagName] = child.firstElementChild ?
+							recurse(child) :
+							child.textContent;
 					}
 				}
 				
