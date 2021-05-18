@@ -12,7 +12,17 @@ namespace Cover
 	export async function coverCreateBucket()
 	{
 		const client = Cover.createClient();
-		const bucket = "put-test-bucket-" + Date.now();
+		const bucket = "bucket-" + Date.now();
+		const putResult = await client.put({ bucket });
+		
+		debugger;
+	}
+	
+	/** */
+	export async function coverCreateBucketAtRegion()
+	{
+		const client = Cover.createClient();
+		const bucket = "bucket-" + Date.now();
 		
 		const putResult = await client.put({
 			bucket,
@@ -22,6 +32,8 @@ namespace Cover
 				}
 			}
 		});
+		
+		debugger;
 	}
 	
 	/** */

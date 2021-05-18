@@ -14,7 +14,8 @@ namespace AirS3
 			{
 				const plainBytes = toBytes(plain);
 				const sha = await window.crypto.subtle.digest("SHA-256", plainBytes);
-				return toHexString(sha);
+				const hexStr = toHexString(sha);
+				return hexStr;
 			}
 			catch (e)
 			{
@@ -99,10 +100,13 @@ namespace AirS3
 		/** */
 		function toHexString(byteArray: ArrayBuffer)
 		{
-			return Array.prototype.map.call(byteArray, byte =>
-			{
-				return ("0" + (byte & 0xFF).toString(16)).slice(-2);
-			}).join("");
+			const pairs: string[] = [];
+			const bytes = new Uint8Array(byteArray);
+			
+			for (const byte of bytes)
+				pairs.push((byte < 16 ? "0" : "") + byte.toString(16));
+			
+			return pairs.join("");
 		}
 		
 		/**

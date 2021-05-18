@@ -82,27 +82,10 @@ namespace AirS3
 				complete: (response: NetworkResponse) => void
 			})
 		{
-			const https = require("https") as typeof import("https");
-			const requestOptions: RequestOptions = {
-				protocol: "https:",
-				host: "s3.amazonaws.com",
-				port: 443,
-				method: options.method,
-				path: "/",
-				headers: options.headers as any,
-			};
-			
-			https.request(requestOptions, res =>
-			{
-				debugger;
-			});
-			
-			if (0 == 0 as any)
-				return;
-			
 			const xhr = new XMLHttpRequest();
 			xhr.open(options.method ?? HttpMethod.get, options.url);
-			xhr.responseType = "arraybuffer";
+			//xhr.responseType = "arraybuffer";
+			xhr.responseType = "text";
 			xhr.withCredentials = true;
 			
 			for (const [name, value] of Object.entries(options.headers))

@@ -11,7 +11,7 @@ namespace AirS3
 		const req: Required<IRequest> = {
 			method: request.method || "GET",
 			bucket: request.bucket || "",
-			key: request.key || "",
+			key: request.key || "/",
 			query: request.query || {},
 			endpoint: request.endpoint || "",
 			region: request.region || "us-east-1",
@@ -20,8 +20,22 @@ namespace AirS3
 			retryCount: request.retryCount || 0,
 		};
 		
+		if (!req.key.startsWith("/"))
+			req.key = "/" + req.key;
+		
+		let host = req.headers["host"] || config.host || Host.airbox;
+		
+		if (req.bucket)
+		{
+			if (config.usePathStyle)
+				req.key = "/" + req.bucket + req.key;
+			else
+				host = req.bucket + "." + host;
+		}
+		
+		req.headers["host"] = host;
+		
 		const dates = Util.getDatePair();
-		req.headers["host"] ||= config.host || Host.airbox;
 		req.headers["x-amz-date"] = dates.fullDate;
 		
 		if (!req.headers["x-amz-content-sha256"])
@@ -36,11 +50,7 @@ namespace AirS3
 		*/
 		
 		const payloadSignature = Const.unsigned;
-		const headersSigned: string[] = [];
-		
-		headersSigned.push("host");
-		
-		//! Do you have to add the signed MD5 header?
+		const headersSigned = ["host"];
 		
 		for (const n of Object.keys(req.headers))
 		{
@@ -70,7 +80,6 @@ namespace AirS3
 		const stringifiedRequestHash = await Crypto.shaHex(canonicalString);
 		
 		const credential = [
-			config.accessKey,
 			dates.calendarDate,
 			req.region,
 			Const.service,
@@ -90,8 +99,16 @@ namespace AirS3
 		const serviceBytes = await Crypto.hmacShaBytes(regionBytes, Const.service);
 		const signatureBytes = await Crypto.hmacShaBytes(serviceBytes, Const.version);
 		const requestSignature = await Crypto.hmacShaHex(signatureBytes, stringToSign);
-		req.headers.authorization = requestSignature;
 		
+		const calculatedAuthHeader = 
+			Const.algorithm + " " + 
+			[
+				"Credential=" + config.accessKey + "/" + credential,
+				"SignedHeaders=" + signedHeadersLine,
+				"Signature=" + requestSignature,
+			].join(", ");
+		
+		req.headers.authorization = calculatedAuthHeader;		
 		return req;
 	}
 	

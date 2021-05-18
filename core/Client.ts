@@ -70,25 +70,15 @@ namespace AirS3
 			
 			const optionsSigned = await AirS3.sign(this.configuration, options);
 			
-			let url = this.configuration.protocol + "://";
-			
-			if (!this.configuration.usePathStyle && optionsSigned.bucket)
-				url += optionsSigned.bucket + ".";
-			
-			url += this.configuration.host;
-			
-			if (this.configuration.usePathStyle && optionsSigned.bucket)
-				url += "/" + optionsSigned.bucket;
-			
-			if (optionsSigned.key !== "")
-				url += "/" + optionsSigned.key;
-			
 			const queryText = Object.entries(optionsSigned.query)
 				.map(([k, v]) => k + "=" + v)
 				.join("&");
 			
-			if (queryText !== "")
-				url += "?" + queryText;
+			const url = 
+				this.configuration.protocol + "://" +
+				optionsSigned.headers["host"] +
+				optionsSigned.key + 
+				(queryText ? "?" + queryText : "");
 			
 			const networkRequest: INetworkRequest = {
 				url,
@@ -106,7 +96,7 @@ namespace AirS3
 			}
 			else
 			{
-				
+				debugger;
 			}
 		}
 	}
