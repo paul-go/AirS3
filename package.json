@@ -1,6 +1,6 @@
 {
 	"name": "airs3",
-	"version": "0.1.0",
+	"version": "0.2.0",
 	"description": "",
 	"author": "Paul Go",
 	"license": "MIT",
@@ -17,9 +17,7 @@
 	"bugs": {
 		"url": "https://github.com/paul-go/AirS3/issues"
 	},
-	"scripts": {
-		
-	},
+	"scripts": {},
 	"devDependencies": {
 		"electron": "^9.3.1",
 		"moduless": "^2.1.24",
