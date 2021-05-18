@@ -15,7 +15,7 @@ This library is certainly more low-level than using the AWS SDK directly. You'll
 
 ## Features
 
-- Lightweight, only 4kb (GZipped + Minified)
+- Lightweight, only 3.7kb (GZipped + Minified)
 - No dependencies
 - Written in TypeScript (compiles with all strict options enabled)
 - Code is well commented, optimized for readability, debuggability, and IntelliSense.
@@ -25,9 +25,14 @@ This library is certainly more low-level than using the AWS SDK directly. You'll
 
 ## Installation
 
-With `npm`:
+With npm:
 ```
 npm install airs3
+```
+
+Include directly from jsDelivr:
+```
+<script src="https://cdn.jsdelivr.net/npm/airs3/build/airs3.min.js"></script>
 ```
 
 ## Code Examples

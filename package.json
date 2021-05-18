@@ -12,13 +12,17 @@
 	"main": "./build/airs3.js",
 	"files": [
 		"build/airs3.js",
-		"build/airs3.d.ts"
+		"build/airs3.d.ts",
+		"build/airs3.min.js"
 	],
 	"types": "./build/airs3.d.ts",
 	"bugs": {
 		"url": "https://github.com/paul-go/AirS3/issues"
 	},
-	"scripts": {},
+	"scripts": {
+		"minify": "terser build/airs3.js > build/airs3.min.js",
+		"publish": "npm run minify & np"
+	},
 	"devDependencies": {
 		"electron": "^9.3.1",
 		"moduless": "^2.1.24",
