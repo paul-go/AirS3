@@ -19,7 +19,7 @@ This library is certainly more low-level than using the AWS SDK directly. You'll
 - No dependencies
 - Written in TypeScript (compiles with all strict options enabled)
 - Code is well commented, optimized for readability, debuggability, and IntelliSense.
-- Promise-based API
+- Promise-based, fetch-style API, but uses XMLHttpRequest in order to support upload progress events.
 - Distributes as a single JavaScript file.
 - Uses the browser's DOMParser class to efficiently convert JSON POST/PUT bodies into XML.
 
