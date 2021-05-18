@@ -1,19 +1,24 @@
 {
-	"name": "airbrowse",
-	"version": "0.1",
+	"name": "airs3",
+	"version": "0.1.0",
 	"description": "",
 	"author": "Paul Go",
 	"license": "MIT",
 	"keywords": [],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/paul-go/AirBrowse"
+		"url": "https://github.com/paul-go/AirS3"
 	},
+	"main": "build/airs3.js",
+	"files": [
+		"build/airs3.js"
+	],
+	"types": "build/airs3.d.ts",
 	"bugs": {
-		"url": "https://github.com/paul-go/AirBrowse/issues"
+		"url": "https://github.com/paul-go/AirS3/issues"
 	},
 	"scripts": {
-		"optimize": "svgo -f ./core/resources"
+		
 	},
 	"devDependencies": {
 		"electron": "^9.3.1",
