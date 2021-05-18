@@ -264,7 +264,7 @@ namespace AirS3
 		 * Returns null in the case when the response cannot be converted into
 		 * a JSON object.
 		 */
-		async json(): Promise<object | null>
+		async json(): Promise<Record<string, any> | null>
 		{
 			const text = await this.text();
 			
@@ -276,7 +276,7 @@ namespace AirS3
 			
 			try
 			{
-				return JSON.parse(text) as object;
+				return JSON.parse(text);
 			}
 			catch (e) { }
 			

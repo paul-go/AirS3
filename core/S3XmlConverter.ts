@@ -15,7 +15,7 @@ namespace AirS3
 			const parser = new DOMParser();
 			const parsed = parser.parseFromString(xmlText, "text/xml");
 			
-			function recurse(element: Element)
+			function recurse(element: Node)
 			{
 				const object: any = {};
 				
@@ -32,7 +32,7 @@ namespace AirS3
 				return object;
 			}
 			
-			return recurse(parsed.documentElement);
+			return recurse(parsed);
 		}
 		
 		/**

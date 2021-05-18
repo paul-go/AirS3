@@ -2,13 +2,6 @@
 namespace Cover
 {
 	/** */
-	export async function coverAirS3()
-	{
-		const client = Cover.createClient();
-		debugger;
-	}
-	
-	/** */
 	export async function coverCreateBucket()
 	{
 		const client = Cover.createClient();
@@ -16,8 +9,6 @@ namespace Cover
 		const putResponse = await client.put({ bucket });
 		
 		return () => putResponse.status === 200;
-		
-		
 	}
 	
 	/** */
@@ -26,8 +17,9 @@ namespace Cover
 		const client = Cover.createClient();
 		const bucket = "bucket-" + Date.now();
 		
-		const putResult = await client.put({
+		const putResponse = await client.put({
 			bucket,
+			region: "us-east-2",
 			body: {
 				CreateBucketConfiguration: {
 					LocationConstraint: "us-east-2"
@@ -35,15 +27,8 @@ namespace Cover
 			}
 		});
 		
-		debugger;
-	}
-	
-	/** */
-	export async function coverGetBucketLocation()
-	{
-		const client = Cover.createClient();
-		const bucket = "bucket-" + Date.now();
-		const putResponse = await client.put({ bucket });
+		if (putResponse.status !== 200)
+			return () => !"Response status is not 200.";
 		
 		const getResponse = await client.get({
 			bucket,
@@ -51,11 +36,13 @@ namespace Cover
 		});
 		
 		if (getResponse.error)
-			return () => !"Fail";
+			return () => !"GetBucketLocation returned an error.";
 		
-		const responseXml = await getResponse.json();
+		const responseJson = await getResponse.json();
+		if (responseJson === null)
+			return () => !"Response JSON is null.";
 		
-		debugger;
+		return () => responseJson.LocationConstraint === "us-east-2";
 	}
 	
 	/** */

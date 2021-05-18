@@ -78,9 +78,12 @@ namespace AirS3
 			
 			const optionsSigned = await AirS3.sign(this.configuration, options);
 			
-			const queryText = Object.entries(optionsSigned.query)
-				.map(([k, v]) => k + "=" + v)
-				.join("&");
+			const queryComponents = [
+				optionsSigned.endpoint,
+				...Object.entries(optionsSigned.query).map(([k, v]) => k + "=" + v)
+			];
+			
+			const queryText = queryComponents.join("&");
 			
 			const url = 
 				this.configuration.protocol + "://" +

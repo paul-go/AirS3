@@ -25,6 +25,17 @@ namespace AirS3
 		
 		let host = req.headers["host"] || config.host || Host.airbox;
 		
+		// The region, if it's not us-east-1, is wedged between the last two
+		// segments of the host name. This is a bit awkward, but there isn't
+		// a standard place where the region is inserted. If there are S3 vendors
+		// that don't work like this, these will have to be individually special-cased.
+		if (req.region !== "us-east-1")
+		{
+			const hostParts = host.split(".");
+			hostParts.splice(-2, 0, req.region);
+			host = hostParts.join(".");
+		}
+		
 		if (req.bucket)
 		{
 			if (config.usePathStyle)
@@ -64,7 +75,7 @@ namespace AirS3
 		if (signedHeadersLine === "")
 			throw new Error();
 		
-		const signableQueryString = constructSignableQueryString(req.query);
+		const signableQueryString = constructSignableQueryString(req.endpoint, req.query);
 		const signedHeaderLines = constructSignedHeaderLines(headersSigned, req.headers);
 		
 		const canonicalString = [
@@ -108,7 +119,8 @@ namespace AirS3
 				"Signature=" + requestSignature,
 			].join(", ");
 		
-		req.headers.authorization = calculatedAuthHeader;		
+		req.headers.authorization = calculatedAuthHeader;
+		
 		return req;
 	}
 	
@@ -117,9 +129,12 @@ namespace AirS3
 	 * We can't just use the raw query string here, because there needs to be a trailing
 	 * equal sign at the end of included parameters that don't have a value.
 	 */
-	function constructSignableQueryString(query: Query): string
+	function constructSignableQueryString(endpoint: string, query: Query): string
 	{
 		const queryComponents: string[] = [];
+		
+		if (endpoint)
+			queryComponents.push(endpoint + "=");
 		
 		for (const [key, value] of Object.entries(query))
 		{
