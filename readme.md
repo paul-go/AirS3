@@ -16,6 +16,7 @@ This library is certainly more low-level than using the AWS SDK directly. You'll
 ## Features
 
 - Lightweight, only 4kb (GZipped + Minified)
+- No dependencies
 - Written in TypeScript (compiles with all strict options enabled)
 - Code is well commented, optimized for readability, debuggability, and IntelliSense.
 - Promise-based API
