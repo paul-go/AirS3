@@ -50,9 +50,18 @@ namespace Cover
 	{
 		const client = Cover.createClient();
 		const bucket = "bucket-" + Date.now();
-		const putResult = await client.put({ bucket });
-		const deleteResult = await client.delete({ bucket });
+		const putResponse = await client.put({ bucket });
+		const deleteResponse = await client.delete({ bucket });
+		const getResponse = await client.get({
+			bucket,
+			endpoint: "location"
+		});
 		
+		return [
+			() => putResponse.ok,
+			() => deleteResponse.ok,
+			() => getResponse.ok,
+		];
 	}
 	
 	/** */
