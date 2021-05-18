@@ -5,7 +5,7 @@ namespace Cover
 	export async function coverCreateBucket()
 	{
 		const client = Cover.createClient();
-		const bucket = "bucket-" + Date.now();
+		const bucket = createBucketName();
 		const putResponse = await client.put({ bucket });
 		
 		return () => putResponse.status === 200;
@@ -15,7 +15,7 @@ namespace Cover
 	export async function coverCreateBucketAtRegion()
 	{
 		const client = Cover.createClient();
-		const bucket = "bucket-" + Date.now();
+		const bucket = createBucketName();
 		
 		const putResponse = await client.put({
 			bucket,
@@ -49,7 +49,7 @@ namespace Cover
 	export async function coverDeleteBucket()
 	{
 		const client = Cover.createClient();
-		const bucket = "bucket-" + Date.now();
+		const bucket = createBucketName();
 		const putResponse = await client.put({ bucket });
 		const deleteResponse = await client.delete({ bucket });
 		const getResponse = await client.get({
@@ -68,10 +68,29 @@ namespace Cover
 	export async function coverPutObject()
 	{
 		const client = Cover.createClient();
-		const key = "put-test-key-" + Date.now();
+		const key = createKeyName()
+		const bucket = createBucketName();
+		const body = "0".repeat(1000);
 		
-		const putResult = await client.put({
+		await client.put({ bucket });
+		const putResponse = await client.put({
 			key,
+			bucket,
+			body
 		});
+		
+		return () => putResponse.ok;
+	}
+	
+	/** */
+	function createBucketName()
+	{
+		return "airs3-bucket-" + Date.now();
+	}
+	
+	/** */
+	function createKeyName()
+	{
+		return "airs3-key-" + Date.now();
 	}
 }
