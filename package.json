@@ -9,11 +9,12 @@
 		"type": "git",
 		"url": "https://github.com/paul-go/AirS3"
 	},
-	"main": "build/airs3.js",
+	"main": "./build/airs3.js",
 	"files": [
-		"build/airs3.js"
+		"build/airs3.js",
+		"build/airs3.d.ts"
 	],
-	"types": "build/airs3.d.ts",
+	"types": "./build/airs3.d.ts",
 	"bugs": {
 		"url": "https://github.com/paul-go/AirS3/issues"
 	},

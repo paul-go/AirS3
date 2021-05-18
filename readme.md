@@ -23,6 +23,13 @@ This library is certainly more low-level than using the AWS SDK directly. You'll
 - Distributes as a single JavaScript file.
 - Uses the browser's DOMParser class to efficiently convert JSON POST/PUT bodies into XML.
 
+## Installation
+
+With `npm`:
+```
+npm install airs3
+```
+
 ## Code Examples
 
 Coming soon.
