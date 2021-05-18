@@ -35,6 +35,14 @@ namespace AirS3
 		/**
 		 * 
 		 */
+		head(options: IRequest)
+		{
+			return this.call("HEAD", options);
+		}
+		
+		/**
+		 * 
+		 */
 		post(options: IRequest)
 		{
 			return this.call("POST", options);
