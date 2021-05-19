@@ -23,9 +23,19 @@ namespace AirS3
 				{
 					if (child instanceof Element)
 					{
-						object[child.tagName] = child.firstElementChild ?
+						const existing = object[child.tagName];
+						const childObject = child.firstElementChild ?
 							recurse(child) :
 							child.textContent;
+						
+						if (existing === undefined)
+							object[child.tagName] = childObject;
+						
+						else if (Array.isArray(existing))
+							existing.push(childObject);
+						
+						else
+							object[child.tagName] = [object[child.tagName], childObject];
 					}
 				}
 				

@@ -65,6 +65,18 @@ namespace Cover
 	}
 	
 	/** */
+	export async function coverListBuckets()
+	{
+		const client = Cover.createClient();
+		const getResponse = await client.get();
+		const response = await getResponse.json();
+		
+		return [
+			() => response!.ListAllMyBucketsResult.Buckets.Bucket.length > 1
+		];
+	}
+	
+	/** */
 	export async function coverPutObject()
 	{
 		const client = Cover.createClient();
