@@ -59,7 +59,7 @@ namespace AirS3
 		/**
 		 * 
 		 */
-		delete(options: IRequest)
+		delete(options: IRequest = {})
 		{
 			return this.call("DELETE", options);
 		}
