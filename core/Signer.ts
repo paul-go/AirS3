@@ -4,20 +4,47 @@ namespace AirS3
 	/**
 	 * @internal
 	 */
+	export async function presign(
+		config: IConfiguration,
+		options: IPresignOptions)
+	{
+		if (!options.query)
+				options.query = {};
+		
+		const dates = Util.getDatePair();
+		const region = options.region || Const.defaultRegion;
+		const scope = constructScope(dates.calendarDate, region);
+		const credential = constructCredential(config.accessKey, scope);
+		const signedHeaders = "host";
+		
+		const expires = options.expiresIn || 3600;
+		options.query[Const.queryAlgorithm] = Const.algorithm;
+		options.query[Const.queryCredential] = encodeURIComponent(credential);
+		options.query[Const.queryDate] = dates.fullDate;
+		options.query[Const.queryExpires] = expires.toString();
+		options.query[Const.querySignedHeaders] = signedHeaders;
+		
+		const signed = await AirS3.sign(config, options);
+		return signed;
+	}
+	
+	/**
+	 * @internal
+	 */
 	export async function sign(
 		config: IConfiguration,
-		request: IRequest)
+		options: IRequestOptions)
 	{
-		const req: Required<IRequest> = {
-			method: request.method || "GET",
-			bucket: request.bucket || "",
-			key: request.key || "/",
-			query: request.query || {},
-			endpoint: request.endpoint || "",
-			region: request.region || "us-east-1",
-			headers: request.headers || {},
-			body: request.body || "",
-			retryCount: request.retryCount || 0,
+		const req: Required<IRequestOptions> = {
+			method: options.method || "GET",
+			bucket: options.bucket || "",
+			key: options.key || "/",
+			query: options.query || {},
+			endpoint: options.endpoint || "",
+			region: options.region || Const.defaultRegion,
+			headers: options.headers || {},
+			body: options.body || "",
+			retryCount: options.retryCount || 0,
 		};
 		
 		if (!req.key.startsWith("/"))
@@ -45,15 +72,25 @@ namespace AirS3
 		}
 		
 		req.headers["host"] = host;
+		const isPresigning = !!req.query[Const.queryAlgorithm];
+		let dates = Util.getDatePair();
 		
-		const dates = Util.getDatePair();
-		req.headers["x-amz-date"] = dates.fullDate;
-		
-		if (!req.headers["x-amz-content-sha256"])
-			req.headers["x-amz-content-sha256"] = Const.unsigned;
+		if (!isPresigning)
+		{
+			if (Const.queryDate in req.query)
+			{
+				const queryDate = req.query[Const.queryDate].toString();
+				dates = Util.parseDate(queryDate);
+			}
+			
+			req.headers["x-amz-date"] = dates.fullDate;
+			
+			if (!req.headers["x-amz-content-sha256"])
+				req.headers["x-amz-content-sha256"] = Const.unsigned;
+		}
 		
 		/*
-		// Can we just not do this?
+		// Some endpoints require md5 signature (deleteObjects, maybe others)
 		if (method === "POST" || method === "PUT")
 			if (!req.headers["content-md5"])
 				if (typeof body === "string")
@@ -89,18 +126,12 @@ namespace AirS3
 		].join("\n");
 		
 		const stringifiedRequestHash = await Crypto.shaHex(canonicalString);
-		
-		const credential = [
-			dates.calendarDate,
-			req.region,
-			Const.service,
-			Const.version,
-		].join("/");
+		const scope = constructScope(dates.calendarDate, req.region);
 		
 		const stringToSign = [
 			Const.algorithm,
 			dates.fullDate,
-			credential,
+			scope,
 			stringifiedRequestHash
 		].join("\n");
 		
@@ -114,14 +145,36 @@ namespace AirS3
 		const calculatedAuthHeader = 
 			Const.algorithm + " " + 
 			[
-				"Credential=" + config.accessKey + "/" + credential,
-				"SignedHeaders=" + signedHeadersLine,
-				"Signature=" + requestSignature,
+				constructCredential(config.accessKey, scope),
+				Const.signedHeadersParam + signedHeadersLine,
+				Const.signatureParam + requestSignature,
 			].join(", ");
 		
 		req.headers.authorization = calculatedAuthHeader;
 		
-		return req;
+		return {
+			options: req,
+			signature: requestSignature
+		}
+	}
+	
+	/** */
+	function constructCredential(accessKey: string, scope: string)
+	{
+		return Const.credentialParam + accessKey + "/" + scope;
+	}
+	
+	/** */
+	function constructScope(calendarDate: string, region: string)
+	{
+		const credential = [
+			calendarDate,
+			region,
+			Const.service,
+			Const.version,
+		].join("/");
+		
+		return credential;
 	}
 	
 	/**
@@ -167,13 +220,27 @@ namespace AirS3
 	}
 	
 	/**
+	 * @internal
 	 * String constants used in the request signing process.
 	 */
-	const enum Const
+	export const enum Const
 	{
+		defaultRegion = "us-east-1",
+		
 		service = "s3",
 		version = "aws4_request",
 		algorithm = "AWS4-HMAC-SHA256",
 		unsigned = "UNSIGNED-PAYLOAD",
+		
+		credentialParam = "Credential=",
+		signedHeadersParam = "SignedHeaders=",
+		signatureParam = "Signature=",
+		
+		queryAlgorithm = "X-Amz-Algorithm",
+		queryCredential = "X-Amz-Credential",
+		queryDate = "X-Amz-Date",
+		queryExpires = "X-Amz-Expires",
+		querySignedHeaders = "X-Amz-SignedHeaders",
+		querySignature = "X-Amz-Signature"
 	}
 }

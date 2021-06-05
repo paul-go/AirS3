@@ -80,8 +80,8 @@ namespace Cover
 	export async function coverPutObject()
 	{
 		const client = Cover.createClient();
-		const key = createKeyName()
 		const bucket = createBucketName();
+		const key = createKeyName()
 		const body = "0".repeat(1000);
 		
 		await client.put({ bucket });
@@ -92,6 +92,17 @@ namespace Cover
 		});
 		
 		return () => putResponse.ok;
+	}
+	
+	/** */
+	export async function coverGetObjectPresigned()
+	{
+		const client = Cover.createClient();
+		const bucket = createBucketName();
+		const key = createKeyName()
+		const url = await client.getPresigned({ bucket, key });
+		
+		return () => typeof url === "string";
 	}
 	
 	/** */

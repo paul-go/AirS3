@@ -11,7 +11,7 @@ namespace AirS3
 	{
 		readonly url: string;
 		readonly method: string;
-		readonly headers: object;
+		readonly headers: IHttpHeaders & object;
 		readonly body: BodyInit;
 		readonly retryCount: number;
 	}
@@ -66,7 +66,7 @@ namespace AirS3
 						},
 						progress: (loaded, total) =>
 						{
-							// Progress
+							
 						},
 						complete: response =>
 						{

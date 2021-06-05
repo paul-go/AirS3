@@ -36,6 +36,18 @@ namespace AirS3
 			};
 		}
 		
+		/**
+		 * Parses an S3 full date string into it's "Calendar date"
+		 * and "Full date" components.
+		 */
+		export function parseDate(fullDate: string)
+		{
+			return {
+				calendarDate: fullDate.split("T")[0],
+				fullDate,
+			};
+		}
+		
 		const pad = (num: number) => num < 10 ? "0" + num : String(num);
 	}
 }

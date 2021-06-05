@@ -7,10 +7,8 @@ namespace AirS3
 	/** */
 	export type Query = Record<string, string | number>;
 	
-	/**
-	 * 
-	 */
-	export interface IRequest
+	/** */
+	export interface IBaseOptions
 	{
 		/**
 		 * @internal
@@ -21,7 +19,7 @@ namespace AirS3
 		method?: string;
 		
 		/**
-		 * The bucket related to the storage request, if applicable.
+		 * The bucket related to the request, if applicable.
 		 */
 		bucket?: string;
 		
@@ -37,13 +35,6 @@ namespace AirS3
 		query?: Query;
 		
 		/**
-		 * The name of the endpoint, which is written in the query string.
-		 * This value should be omitted for S3 endpoints that do not use
-		 * a named endpoint, such as CreateBucket and ListObjects.
-		 */
-		endpoint?: string;
-		
-		/**
 		 * Sets the region to use. If omitted, the region is assumed to be
 		 * us-east-1.
 		 */
@@ -55,6 +46,17 @@ namespace AirS3
 		 * authorize the request, such as Authorization and X-Amz-Content-Sha256.
 		 */
 		headers?: IHttpHeaders & object;
+	}
+	
+	/** */
+	export interface IRequestOptions extends IBaseOptions
+	{
+		/**
+		 * The name of the endpoint, which is written in the query string.
+		 * This value should be omitted for S3 endpoints that do not use
+		 * a named endpoint, such as CreateBucket and ListObjects.
+		 */
+		endpoint?: string;
 		
 		/** */
 		body?: BodyInit | S3XmlJsonObject;
@@ -64,6 +66,20 @@ namespace AirS3
 		 * is determined to be unavailable. Defaults to 0.
 		 */
 		retryCount?: number;
+	}
+	
+	/** */
+	export interface IPresignOptions extends IBaseOptions
+	{
+		expiresIn?: number;
+	}
+	
+	/** */
+	export interface IRequestEvents
+	{
+		readonly progress?: (loaded: number, total: number) => void;
+		readonly error?: (response: NetworkResponse) => void;
+		readonly complete?: () => void;
 	}
 	
 	/** */

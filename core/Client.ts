@@ -27,47 +27,86 @@ namespace AirS3
 		/**
 		 * 
 		 */
-		get(options: IRequest = {})
+		get(options: IRequestOptions = {})
 		{
-			return this.call("GET", options);
+			return this.request("GET", options);
+		}
+		
+		/**
+		 * Generates a pre-signed download URL for the specified 
+		 */
+		getPresigned(options: IPresignOptions)
+		{
+			return this.presign("GET", options);
 		}
 		
 		/**
 		 * 
 		 */
-		head(options: IRequest)
+		head(options: IRequestOptions)
 		{
-			return this.call("HEAD", options);
+			return this.request("HEAD", options);
 		}
 		
 		/**
 		 * 
 		 */
-		post(options: IRequest)
+		post(options: IRequestOptions)
 		{
-			return this.call("POST", options);
+			return this.request("POST", options);
 		}
 		
 		/**
 		 * 
 		 */
-		put(options: IRequest)
+		put(options: IRequestOptions)
 		{
-			return this.call("PUT", options);
+			return this.request("PUT", options);
 		}
 		
 		/**
 		 * 
 		 */
-		delete(options: IRequest = {})
+		delete(options: IRequestOptions)
 		{
-			return this.call("DELETE", options);
+			return this.request("DELETE", options);
 		}
 		
 		/**
 		 * 
 		 */
-		async call(method: string, options: IRequest)
+		async request(method: string, options: IRequestOptions)
+		{
+			const networkRequest = await this.createNetworkRequest(method, options);
+			const response = await Network.beginRequest(networkRequest);
+			return response;
+		}
+		
+		/**
+		 * 
+		 */
+		private async presign(method: string, options: IPresignOptions)
+		{
+			options.method = method;
+			
+			const presigned = await AirS3.presign(this.configuration, options);
+			presigned.options.query[Const.querySignature] = presigned.signature;
+			
+			const query = Object.entries(presigned.options.query)
+				.map(([k, v]) => k + "=" + v)
+				.join("&");
+			
+			const url =
+				this.configuration.protocol + "://" +
+				presigned.options.headers["host"] +
+				presigned.options.key +
+				"?" + query;
+			
+			return url;
+		}
+		
+		/** */
+		private async createNetworkRequest(method: string, options: IRequestOptions)
 		{
 			options.method = method;
 			
@@ -76,31 +115,30 @@ namespace AirS3
 					if (options.body.constructor === Object)
 						options.body = S3XmlConverter.fromJson(options.body as S3XmlJsonObject);
 			
-			const optionsSigned = await AirS3.sign(this.configuration, options);
+			const signed = await AirS3.sign(this.configuration, options);
 			
 			const queryComponents = [
-				optionsSigned.endpoint,
-				...Object.entries(optionsSigned.query).map(([k, v]) => k + "=" + v)
+				options.endpoint,
+				...Object.entries(signed.options.query).map(([k, v]) => k + "=" + v)
 			];
 			
 			const queryText = queryComponents.join("&");
 			
 			const url = 
 				this.configuration.protocol + "://" +
-				optionsSigned.headers["host"] +
-				optionsSigned.key + 
+				signed.options.headers["host"] +
+				signed.options.key + 
 				(queryText ? "?" + queryText : "");
 			
 			const networkRequest: INetworkRequest = {
 				url,
-				method: optionsSigned.method,
-				headers: optionsSigned.headers,
-				body: optionsSigned.body as BodyInit,
-				retryCount: optionsSigned.retryCount
+				method: signed.options.method,
+				headers: signed.options.headers,
+				body: signed.options.body as BodyInit,
+				retryCount: signed.options.retryCount
 			};
 			
-			const response = await Network.beginRequest(networkRequest);
-			return response;
+			return networkRequest;
 		}
 	}
 	
