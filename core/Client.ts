@@ -27,9 +27,9 @@ namespace AirS3
 		/**
 		 * 
 		 */
-		get(options: IRequestOptions = {})
+		get(options: IRequestOptions = {}, events: IRequestEvents = {})
 		{
-			return this.request("GET", options);
+			return this.request("GET", options, events);
 		}
 		
 		/**
@@ -43,42 +43,42 @@ namespace AirS3
 		/**
 		 * 
 		 */
-		head(options: IRequestOptions)
+		head(options: IRequestOptions, events: IRequestEvents = {})
 		{
-			return this.request("HEAD", options);
+			return this.request("HEAD", options, events);
 		}
 		
 		/**
 		 * 
 		 */
-		post(options: IRequestOptions)
+		post(options: IRequestOptions, events: IRequestEvents = {})
 		{
-			return this.request("POST", options);
+			return this.request("POST", options, events);
 		}
 		
 		/**
 		 * 
 		 */
-		put(options: IRequestOptions)
+		put(options: IRequestOptions, events: IRequestEvents = {})
 		{
-			return this.request("PUT", options);
+			return this.request("PUT", options, events);
 		}
 		
 		/**
 		 * 
 		 */
-		delete(options: IRequestOptions)
+		delete(options: IRequestOptions, events: IRequestEvents = {})
 		{
-			return this.request("DELETE", options);
+			return this.request("DELETE", options, events);
 		}
 		
 		/**
 		 * 
 		 */
-		async request(method: string, options: IRequestOptions)
+		async request(method: string, options: IRequestOptions, events: IRequestEvents = {})
 		{
 			const networkRequest = await this.createNetworkRequest(method, options);
-			const response = await Network.beginRequest(networkRequest);
+			const response = await Network.beginRequest(networkRequest, events);
 			return response;
 		}
 		

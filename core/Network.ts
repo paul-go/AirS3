@@ -1,9 +1,6 @@
 
 namespace AirS3
 {
-	// Delete this
-	type RequestOptions = import("http").RequestOptions;
-	
 	/**
 	 * @internal
 	 */
@@ -25,7 +22,7 @@ namespace AirS3
 		 * Wraps the built-in fetch() function, providing a better way
 		 * to handle failure (such as network failures).
 		 */
-		static beginRequest(options: INetworkRequest)
+		static beginRequest(nr: INetworkRequest, events: IRequestEvents)
 		{
 			return new Promise<NetworkResponse>(resolve =>
 			{
@@ -34,21 +31,23 @@ namespace AirS3
 				// uncertainty, so it cannot be used.
 				
 				let retryCount = 
-					options.method !== HttpMethod.post &&
-					options.method !== HttpMethod.put ?
-						options.retryCount || 0 :
+					nr.method !== HttpMethod.post &&
+					nr.method !== HttpMethod.put ?
+						nr.retryCount || 0 :
 						0;
 				
 				const attempt = () =>
 				{
-					this.tryRequest(options, {
+					this.tryRequest(nr, {
 						timeout: () =>
 						{
 							// Timeout (not currently triggered)
 							if (retryCount === 0)
 							{
 								const e = ErrorString.timeoutResponse;
-								return resolve(NetworkResponse.fromError(e));
+								const error = NetworkResponse.fromError(e);
+								events.error?.(error);
+								return resolve(error);
 							}
 							
 							retryCount--;
@@ -57,19 +56,21 @@ namespace AirS3
 						error: () =>
 						{
 							const e = ErrorString.noResponse;
-							resolve(NetworkResponse.fromError(e));
+							const error = NetworkResponse.fromError(e);
+							events.error?.(error);
+							resolve(error);
 						},
 						terminate: () =>
 						{
 							const e = ErrorString.terminateResponse;
-							resolve(NetworkResponse.fromError(e));
+							const error = NetworkResponse.fromError(e);
+							events.error?.(error);
+							resolve(error);
 						},
-						progress: (loaded, total) =>
-						{
-							
-						},
+						progress: events.progress || (() => {}),
 						complete: response =>
 						{
+							events.complete?.();
 							resolve(response);
 						}
 					});
