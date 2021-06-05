@@ -1,6 +1,4 @@
 
-(**Project status**: Not working yet. Getting there quickly though. This isn't a side project. It's needed for a commercial product.)
-
 # AirS3
 
 AirS3 is a lightweight S3 HTTP client for browsers. It's designed to feel as egonomic as other HTTP clients such as [ky](https://github.com/sindresorhus/ky), except that the request signing process happens automatically in the background.
