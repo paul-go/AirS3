@@ -37,7 +37,7 @@ namespace AirS3
 	{
 		const req: Required<IRequestOptions> = {
 			method: options.method || "GET",
-			bucket: options.bucket || "",
+			bucket: (options.bucket || "").toLowerCase(),
 			key: options.key || "/",
 			query: options.query || {},
 			endpoint: options.endpoint || "",
