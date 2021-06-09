@@ -145,7 +145,7 @@ namespace AirS3
 		const calculatedAuthHeader = 
 			Const.algorithm + " " + 
 			[
-				constructCredential(config.accessKey, scope),
+				Const.credentialParam + constructCredential(config.accessKey, scope),
 				Const.signedHeadersParam + signedHeadersLine,
 				Const.signatureParam + requestSignature,
 			].join(", ");
@@ -161,7 +161,7 @@ namespace AirS3
 	/** */
 	function constructCredential(accessKey: string, scope: string)
 	{
-		return Const.credentialParam + accessKey + "/" + scope;
+		return accessKey + "/" + scope;
 	}
 	
 	/** */
