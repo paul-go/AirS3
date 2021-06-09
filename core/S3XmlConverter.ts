@@ -69,34 +69,41 @@ namespace AirS3
 				{
 					const elementName = key[0].toUpperCase() + key.slice(1);
 					
-					if (mustAddXmlns)
+					if (Array.isArray(value))
 					{
-						mustAddXmlns = false;
-						parts.push(`<${elementName} ${ns}>`);
+						for (const item of value)
+						{
+							parts.push(`<${elementName}>`);
+							recurse(item);
+							parts.push(`</${elementName}>`);
+						}
 					}
 					else
 					{
-						parts.push(`<${elementName}>`);
+						if (mustAddXmlns)
+						{
+							mustAddXmlns = false;
+							parts.push(`<${elementName} ${ns}>`);
+						}
+						else
+						{
+							parts.push(`<${elementName}>`);
+						}
+						
+						if (typeof value === "string")
+							parts.push(value);
+						
+						else if (value === null)
+							parts.push("null");
+						
+						else if (typeof value === "number")
+							parts.push(String(value || 0));
+						
+						else if (typeof value === "object")
+							recurse(value as S3XmlJsonObject);
+						
+						parts.push("</" + elementName + ">");
 					}
-					
-					if (typeof value === "string")
-						parts.push(value);
-					
-					else if (value === null)
-						parts.push("null");
-					
-					else if (typeof value === "number")
-						parts.push(String(value || 0));
-					
-					else if (Array.isArray(value))
-					{
-						for (const item of value)
-							recurse(item);
-					}
-					else if (typeof value === "object")
-						recurse(value as S3XmlJsonObject);
-					
-					parts.push("</" + elementName + ">");
 				}
 			}
 			
