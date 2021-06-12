@@ -9,7 +9,7 @@ namespace AirS3
 		options: IPresignOptions)
 	{
 		if (!options.query)
-				options.query = {};
+			options.query = {};
 		
 		const dates = Util.getDatePair();
 		const region = options.region || Const.defaultRegion;
@@ -19,7 +19,8 @@ namespace AirS3
 		
 		const expires = options.expiresIn || 3600;
 		options.query[Const.queryAlgorithm] = Const.algorithm;
-		options.query[Const.queryCredential] = encodeURIComponent(credential);
+		options.query[Const.queryContentSha256] = "UNSIGNED-PAYLOAD";
+		options.query[Const.queryCredential] = credential;
 		options.query[Const.queryDate] = dates.fullDate;
 		options.query[Const.queryExpires] = expires.toString();
 		options.query[Const.querySignedHeaders] = signedHeaders;
@@ -237,6 +238,7 @@ namespace AirS3
 		signatureParam = "Signature=",
 		
 		queryAlgorithm = "X-Amz-Algorithm",
+		queryContentSha256 = "X-Amz-Content-Sha256",
 		queryCredential = "X-Amz-Credential",
 		queryDate = "X-Amz-Date",
 		queryExpires = "X-Amz-Expires",
