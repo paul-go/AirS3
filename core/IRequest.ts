@@ -78,11 +78,16 @@ namespace AirS3
 		stopper?: Stopper;
 		
 		/** */
-		readonly callbacks?: {
-			readonly cancel?: () => void;
-			readonly progress?: (loaded: number, total: number) => void;
-			readonly complete?: () => void;
-		};
+		readonly callbacks?: IRequestCallbacks;
+	}
+	
+	/** */
+	export interface IRequestCallbacks
+	{
+		readonly stop?: () => void;
+		readonly error?: () => void;
+		readonly progress?: (loaded: number, total: number) => void;
+		readonly complete?: () => void;
 	}
 	
 	/** */

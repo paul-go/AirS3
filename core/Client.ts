@@ -158,12 +158,13 @@ namespace AirS3
 				});
 				*/
 				
-				const success = await new Promise<boolean>(resolve =>
+				const finished = await new Promise<boolean>(resolve =>
 				{
-					xhr.addEventListener("error", e =>
+					xhr.addEventListener("error", ev =>
 					{
 						Client.activeRequests.delete(xhr);
 						nr = NetworkResponse.fromXhr(xhr);
+						options.callbacks?.error?.();
 						resolve(false);
 					});
 					
@@ -186,8 +187,15 @@ namespace AirS3
 					xhr.addEventListener("abort", () =>
 					{
 						Client.activeRequests.delete(xhr);
-						options.callbacks?.cancel?.();
-						resolve(false);
+						options.callbacks?.stop?.();
+						resolve(true);
+					});
+					
+					xhr.addEventListener("error", ev =>
+					{
+						Client.activeRequests.delete(xhr);
+						nr = NetworkResponse.fromXhr(xhr);
+						resolve(true);
 					});
 					
 					xhr.addEventListener("load", () =>
@@ -226,7 +234,7 @@ namespace AirS3
 					xhr.send(options.body as BodyInit);
 				});
 				
-				if (success)
+				if (finished)
 					break;
 			}
 			
