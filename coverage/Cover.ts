@@ -116,4 +116,27 @@ namespace Cover
 	{
 		return "airs3-key-" + Date.now();
 	}
+	
+	/** */
+	export async function coverStopper()
+	{
+		const client = Cover.createClient();
+		const bucket = createBucketName();
+		const stopper = new AirS3.Stopper();
+		
+		await client.put({ bucket });
+		client.put({ bucket, key: "A", body: "", stopper });
+		client.put({ bucket, key: "B", body: "", stopper });
+		stopper.stop();
+		
+		await new Promise(r => setTimeout(r, 1000));
+		
+		const getA = await client.get({ bucket, key: "A" });
+		const getB = await client.get({ bucket, key: "B" });
+		
+		return [
+			() => getA.status === 404,
+			() => getB.status === 404,
+		];
+	}
 }

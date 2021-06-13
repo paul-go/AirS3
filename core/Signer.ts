@@ -46,6 +46,8 @@ namespace AirS3
 			headers: options.headers || {},
 			body: options.body || "",
 			retryCount: options.retryCount || 0,
+			stopper: null as any,
+			callbacks: null as any,
 		};
 		
 		if (!req.key.startsWith("/"))

@@ -58,7 +58,11 @@ namespace AirS3
 		 */
 		endpoint?: string;
 		
-		/** */
+		/**
+		 * An optional request body to pass with the request.
+		 * If this value is a plain JavaScript object, it will be converted
+		 * into an XML representation before being transmitted.
+		 */
 		body?: BodyInit | S3XmlJsonObject;
 		
 		/**
@@ -66,20 +70,25 @@ namespace AirS3
 		 * is determined to be unavailable. Defaults to 0.
 		 */
 		retryCount?: number;
+		
+		/**
+		 * A reference to a Stopper object, which can be used to terminate
+		 * the request before it completes.
+		 */
+		stopper?: Stopper;
+		
+		/** */
+		readonly callbacks?: {
+			readonly cancel?: () => void;
+			readonly progress?: (loaded: number, total: number) => void;
+			readonly complete?: () => void;
+		};
 	}
 	
 	/** */
 	export interface IPresignOptions extends IBaseOptions
 	{
 		expiresIn?: number;
-	}
-	
-	/** */
-	export interface IRequestEvents
-	{
-		readonly progress?: (loaded: number, total: number) => void;
-		readonly error?: (response: NetworkResponse) => void;
-		readonly complete?: () => void;
 	}
 	
 	/** */
