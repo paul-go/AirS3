@@ -22,7 +22,7 @@ namespace AirS3
 			return res;
 		}
 		
-		private constructor() { }
+		constructor() { }
 		private xhr: XMLHttpRequest | null = null;
 		
 		/**
@@ -65,7 +65,7 @@ namespace AirS3
 		 */
 		blob()
 		{
-			return this.xhr ? 
+			return this.xhr?.response ? 
 				this.xhr.response as Blob :
 				new Blob();
 		}
@@ -85,8 +85,16 @@ namespace AirS3
 		 */
 		text()
 		{
-			return this.blob().text();
-			//return new TextDecoder().decode();
+			try
+			{
+				return this.blob().text();
+			}
+			catch (e)
+			{
+				const blob = this.blob();
+				debugger;
+			}
+			return Promise.resolve("");
 		}
 		
 		/**
