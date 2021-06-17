@@ -2,16 +2,29 @@
 namespace AirS3
 {
 	/**
-	 * 
+	 * A class that handles HTTP communication with S3 endpoints.
 	 */
 	export class Client
 	{
 		/** */
 		constructor(configuration: IConfiguration)
 		{
+			this.configuration = this.toRequiredConfiguration(configuration);
+		}
+		
+		/**
+		 * Updates the internal configuration with the values in the object specified.
+		 */
+		configure(configuration: IConfiguration)
+		{
+			this.configuration = this.toRequiredConfiguration(configuration);
+		}
+		
+		/** */
+		private toRequiredConfiguration(configuration: IConfiguration): Required<IConfiguration>
+		{
 			const protocol = configuration.protocol || "https";
-			
-			this.configuration = {
+			return {
 				accessKey: configuration.accessKey,
 				secretKey: configuration.secretKey,
 				host: configuration.host || Host.airbox,
@@ -20,12 +33,13 @@ namespace AirS3
 				usePathStyle: configuration.usePathStyle || false,
 			};
 		}
-		
+				
 		/** */
-		private readonly configuration: Required<IConfiguration>;
+		private configuration: Required<IConfiguration>;
 		
 		/**
-		 * 
+		 * Performs an HTTP GET request to the server as specified in this Client's configuration.
+		 * The request signing process happens automatically.
 		 */
 		get(options: IRequestOptions = {})
 		{
@@ -41,7 +55,8 @@ namespace AirS3
 		}
 		
 		/**
-		 * 
+		 * Performs an HTTP HEAD request to the server as specified in this Client's configuration.
+		 * The request signing process happens automatically.
 		 */
 		head(options: IRequestOptions)
 		{
@@ -49,7 +64,8 @@ namespace AirS3
 		}
 		
 		/**
-		 * 
+		 * Performs an HTTP POST request to the server as specified in this Client's configuration.
+		 * The request signing process happens automatically.
 		 */
 		post(options: IRequestOptions)
 		{
@@ -57,7 +73,8 @@ namespace AirS3
 		}
 		
 		/**
-		 * 
+		 * Performs an HTTP PUT request to the server as specified in this Client's configuration.
+		 * The request signing process happens automatically.
 		 */
 		put(options: IRequestOptions)
 		{
@@ -65,7 +82,8 @@ namespace AirS3
 		}
 		
 		/**
-		 * 
+		 * Performs an HTTP DELETE request to the server as specified in this Client's configuration.
+		 * The request signing process happens automatically.
 		 */
 		delete(options: IRequestOptions)
 		{
@@ -73,7 +91,8 @@ namespace AirS3
 		}
 		
 		/**
-		 * 
+		 * Performs an HTTP request with the method specified to the server as specified in this
+		 * Client's configuration. The request signing process happens automatically.
 		 */
 		async request(method: string, options: IRequestOptions)
 		{
@@ -187,14 +206,8 @@ namespace AirS3
 					xhr.addEventListener("abort", () =>
 					{
 						Client.activeRequests.delete(xhr);
+						nr = NetworkResponse.fromError(ErrorString.terminateResponse);
 						options.callbacks?.stop?.();
-						resolve(true);
-					});
-					
-					xhr.addEventListener("error", ev =>
-					{
-						Client.activeRequests.delete(xhr);
-						nr = NetworkResponse.fromXhr(xhr);
 						resolve(true);
 					});
 					
@@ -208,22 +221,6 @@ namespace AirS3
 					xhr.addEventListener("progress", ev =>
 					{
 						options.callbacks?.progress?.(ev.loaded, ev.total);
-					});
-					
-					xhr.upload.addEventListener("loadstart", ev =>
-					{
-						
-					});
-					
-					xhr.upload.addEventListener("loadend", ev =>
-					{
-						
-					});
-					
-					xhr.upload.addEventListener("load", ev =>
-					{
-						options.callbacks?.complete?.();
-						resolve(true);
 					});
 					
 					xhr.upload.addEventListener("progress", ev =>
