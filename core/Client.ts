@@ -198,7 +198,6 @@ namespace AirS3
 						}
 						else
 						{
-							retryCount--;
 							resolve(false);
 						}
 					});
@@ -230,6 +229,8 @@ namespace AirS3
 					
 					xhr.send(options.body as BodyInit);
 				});
+				
+				retryCount--;
 				
 				if (finished)
 					break;
