@@ -124,16 +124,6 @@ namespace AirS3
 				signed.options.key + 
 				(queryText ? "?" + queryText : "");
 			
-			/*
-			const nr: INetworkRequest = {
-				url,
-				method: signed.options.method,
-				headers: signed.options.headers,
-				body: signed.options.body as BodyInit,
-				retryCount: signed.options.retryCount
-			};
-			*/
-			
 			// A false navigator.onLine value indicates that the internet connection is 
 			// definitely not available in WebKit browsers, but a true value indicates
 			// uncertainty, so it cannot be relied on entirely.
@@ -153,13 +143,13 @@ namespace AirS3
 				const xhr = new XMLHttpRequest();
 				xhr.open(options.method ?? HttpMethod.get, url);
 				xhr.responseType = "blob";
-				xhr.withCredentials = true;
 				
 				if (options.stopper)
 					options.stopper.connect(xhr);
 				
 				for (const [name, value] of Object.entries(signed.options.headers))
-					xhr.setRequestHeader(name, value);
+					if (name !== "host")
+						xhr.setRequestHeader(name, value);
 				
 				// The timeout detection is currently disabled, because the browser's 
 				// implementation doesn't appear to work very well. If the request hasn't
@@ -167,7 +157,6 @@ namespace AirS3
 				// upload is in progress), the timeout handler triggers. In order to implement
 				// this properly, it appears you would need to check for progress events not
 				// being triggered after a particular amount of time.
-				
 				/*
 				xhr.timeout = params.timeout ?? 5000;
 				xhr.addEventListener("timeout", () =>
