@@ -71,14 +71,6 @@ namespace AirS3
 		}
 		
 		/**
-		 * Converts the response object into an ArrayBuffer.
-		 */
-		arrayBuffer()
-		{
-			return this.blob().arrayBuffer();
-		}
-		
-		/**
 		 * Returns the raw text HTTP response. Depending on the S3 endpoint,
 		 * this may either return an empty string, a string containing XML content,
 		 * or the contents of the requested object.
@@ -93,13 +85,7 @@ namespace AirS3
 			return new Promise<string>(resolve =>
 			{
 				const reader = new FileReader();
-				
-				reader.onloadend = () =>
-				{
-					const result = reader.result as string || "";
-					resolve(result);
-				};
-				
+				reader.onloadend = () => resolve(reader.result as string || "");
 				reader.readAsText(blob);
 			});
 		}
