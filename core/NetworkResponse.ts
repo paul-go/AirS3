@@ -85,16 +85,23 @@ namespace AirS3
 		 */
 		text()
 		{
-			try
+			const blob = this.blob();
+			
+			if (typeof blob.text === "function")
+				return blob.text();
+			
+			return new Promise<string>(resolve =>
 			{
-				return this.blob().text();
-			}
-			catch (e)
-			{
-				const blob = this.blob();
-				debugger;
-			}
-			return Promise.resolve("");
+				const reader = new FileReader();
+				
+				reader.onloadend = () =>
+				{
+					const result = reader.result as string || "";
+					resolve(result);
+				};
+				
+				reader.readAsText(blob);
+			});
 		}
 		
 		/**
