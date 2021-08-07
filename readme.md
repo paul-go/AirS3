@@ -39,4 +39,4 @@ Coming soon.
 
 ## Funding
 
-The development of this library is funded by [Airbox](https://www.airbox.ai). This library is being used by Airbox's upcoming browser-based S3 file manager (which may also be open-sourced at some point). If you'd like to support this project, consider moving off of Amazon S3 and giving [Airbox](https://www.airbox.ai) a try.
+The development of this library is funded by [Airbox](https://www.airbox.app). This library is being used by Airbox's upcoming browser-based S3 file manager (which may also be open-sourced at some point). If you'd like to support this project, consider moving off of Amazon S3 and giving [Airbox](https://www.airbox.app) a try.
